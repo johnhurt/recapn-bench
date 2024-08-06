@@ -1,0 +1,3 @@
+[submodule "recapn"]
+	path = recapn
+	url = git@github.com:ObsidianMinor/recapn.git
