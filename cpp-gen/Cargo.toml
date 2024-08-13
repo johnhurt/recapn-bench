@@ -1,0 +1,9 @@
+[package]
+name = "cpp-gen"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[build-dependencies]
+build-helper = { path = "../build-helper" }

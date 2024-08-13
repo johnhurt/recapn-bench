@@ -1,1 +1,3 @@
-/target
+**/target
+*.capnp.h
+*.capnp.c++

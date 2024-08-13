@@ -1,0 +1,12 @@
+[package]
+name = "cpp-interop"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[env]
+OUT_DIR = "kluge"
+
+[build-dependencies]
+build-helper = { path = "../build-helper" }

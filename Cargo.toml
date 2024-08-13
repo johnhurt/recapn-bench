@@ -1,6 +1,9 @@
-[package]
-name = "recapn-bench"
-version = "0.1.0"
-edition = "2021"
+[workspace]
 
-[dependencies]
+members = [ "build-helper", 
+    "cpp-gen", 
+    "cpp-interop",
+    "recapn-bench",
+]
+
+resolver = "2"
