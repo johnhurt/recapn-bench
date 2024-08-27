@@ -34,5 +34,5 @@ This (and recapn) is a work in progress. Below is a matrix of bench tests that a
 
 | Category | Args    | Test        | Supported | Status | Notes |
 | -------- | ------- | ----------- | --------- | ------ | ----- |
-| Basic    | `hello` | Hello Bench | [+]       | [+]    | Done  |
+| Basic    | `hello` | Hello Bench | ✅         | ✅      | Done  |
 
