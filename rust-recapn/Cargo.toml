@@ -1,0 +1,13 @@
+[package]
+name = "rust-recapn"
+version = "0.1.0"
+edition = "2021"
+
+[env]
+OUT_DIR = "kluge"
+
+[dependencies]
+recapn = { path = "../recapn/recapn" }
+
+[build-dependencies]
+build-helper = { path = "../build-helper" }

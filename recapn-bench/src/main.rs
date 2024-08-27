@@ -1,15 +1,30 @@
-use cpp_interop::hello;
+use clap::{Parser, Subcommand};
+use hello::hello_main;
+
+mod hello;
+
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+#[command(propagate_version = true)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    /// Adds files to myapp
+    Hello,
+}
 
 fn main() {
-    println!("Hello, world!");
+    let cli = Cli::parse();
 
-    let mut working_buffer = vec![0; 1024];
-
-    unsafe {
-        let written = cpp_interop::write(&mut working_buffer) as usize;
-
-        assert!(written > 0 && written < working_buffer.len());
-
-        assert_eq!(cpp_interop::read(&mut working_buffer), 0);
+    // You can check for the existence of subcommands, and if found use their
+    // matches just as you would the top level cmd
+    match &cli.command {
+        Commands::Hello => {
+            hello_main();
+        }
     }
 }

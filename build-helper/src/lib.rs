@@ -1,8 +1,8 @@
 use std::env;
 use std::fs::read_dir;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::str::from_utf8;
+use std::str::{from_utf8, FromStr};
 
 pub struct CompileCapnpCpp {
     pub working_dir: Option<String>,
@@ -31,6 +31,17 @@ pub fn compile_capnp_cpp(instr: &CompileCapnpCpp) {
         "C++ capnp failed with: {}",
         from_utf8(&output.stderr).unwrap()
     );
+}
+
+pub fn compile_capnp_rust_old(path: impl AsRef<str>) {
+    let path = PathBuf::from_str(path.as_ref()).unwrap();
+    capnpc::CompilerCommand::new().file(path).run().unwrap();
+}
+
+pub fn compile_recapn(path: impl AsRef<Path>) {
+    recapnc::CapnpCommand::new()
+        .file(path.as_ref())
+        .write_to_out_dir();
 }
 
 pub fn get_capnp_file_names(dir: &str) -> Vec<String> {

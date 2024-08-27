@@ -1,9 +1,14 @@
 [workspace]
 
-members = [ "build-helper", 
-    "cpp-gen", 
+members = [
+    "build-helper",
+    "cpp-gen",
     "cpp-interop",
     "recapn-bench",
+    "rust-old-capnp", 
+    "rust-recapn",
 ]
 
 resolver = "2"
+[workspace.lints.rust]
+rust-2018-idioms = "warn"
