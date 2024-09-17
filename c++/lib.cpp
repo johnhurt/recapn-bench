@@ -13,7 +13,7 @@ using addressbook::Person;
 
 using namespace std;
 
-void writeAddressBook(kj::OutputStream &output)
+void writeAddressBook(kj::OutputStream &output, bool packed)
 {
     ::capnp::MallocMessageBuilder message;
 
@@ -44,14 +44,31 @@ void writeAddressBook(kj::OutputStream &output)
         bob.getEmployment().setUnemployed();
     }
 
-    writePackedMessage(output, message);
+    if (packed)
+    {
+        writePackedMessage(output, message);
+    }
+    else
+    {
+        writeMessage(output, message);
+    }
 }
 
-void printAddressBook(kj::BufferedInputStream &input)
+void printAddressBook(kj::BufferedInputStream &input, bool packed)
 {
-    ::capnp::PackedMessageReader message(input);
+    AddressBook::Reader addressBook;
+    ::capnp::MessageReader *message;
 
-    AddressBook::Reader addressBook = message.getRoot<AddressBook>();
+    if (packed)
+    {
+        message = new ::capnp::PackedMessageReader(input);
+        addressBook = message->getRoot<AddressBook>();
+    }
+    else
+    {
+        message = new ::capnp::InputStreamMessageReader(input);
+        addressBook = message->getRoot<AddressBook>();
+    }
 
     for (Person::Reader person : addressBook.getPeople())
     {
@@ -94,6 +111,8 @@ void printAddressBook(kj::BufferedInputStream &input)
             break;
         }
     }
+
+    delete message;
 }
 
 int hello(void *buf, int len)
@@ -109,12 +128,12 @@ int hello(void *buf, int len)
     return 0;
 }
 
-int write(void *buf, int len)
+int write_addressbook(void *buf, int len, bool packed)
 {
     try
     {
         kj::ArrayOutputStream stream(kj::ArrayPtr<kj::byte>((kj::byte *)buf, len));
-        writeAddressBook(stream);
+        writeAddressBook(stream, packed);
         return (int)stream.getArray().size();
     }
     catch (const std::exception &e)
@@ -125,12 +144,12 @@ int write(void *buf, int len)
     }
 }
 
-int read(void *buf, int len)
+int read_addressbook(void *buf, int len, bool packed)
 {
     try
     {
         kj::ArrayInputStream stream(kj::ArrayPtr<kj::byte>((kj::byte *)buf, len));
-        printAddressBook(stream);
+        printAddressBook(stream, packed);
         return 0;
     }
     catch (const std::exception &e)

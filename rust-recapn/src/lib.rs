@@ -9,12 +9,15 @@ use std::{
 
 use arena::ReadArena;
 use gen::capnp_addressbook_capnp::*;
-use io::{read_packed_from_stream, PackedStream, SegmentSetTable, StreamOptions};
+use io::{
+    read_from_slice, read_from_stream, read_packed_from_stream, PackedStream, SegmentSet,
+    SegmentSetTable, StreamOptions,
+};
 use message::Message;
 use recapn::*;
 use ty::Struct;
 
-pub fn write_address_book<W: Write>(target: &mut W) {
+pub fn write_address_book<W: Write>(target: &mut W, packed: bool) {
     let mut message = Message::global();
     let mut builder = message.builder().init_struct_root::<AddressBook>();
     {
@@ -73,12 +76,26 @@ pub fn write_address_book<W: Write>(target: &mut W) {
         }
     }
 
-    recapn::io::write_message_packed(target, &message.segments().unwrap()).unwrap();
+    if packed {
+        recapn::io::write_message_packed(target, &message.segments().unwrap()).unwrap();
+    } else {
+        recapn::io::write_message(target, &message.segments().unwrap()).unwrap();
+    }
 }
 
-pub fn print_address_book<W: Write>(src: &[u8], output: &mut W) -> ::recapn::Result<()> {
-    let mut message_reader = PackedStream::new(src);
-    let segments = read_packed_from_stream(&mut message_reader, StreamOptions::default()).unwrap();
+pub fn print_address_book<W: Write>(
+    src: &[u8],
+    output: &mut W,
+    packed: bool,
+) -> ::recapn::Result<()> {
+    let segments;
+
+    if packed {
+        let mut message_reader = PackedStream::new(src);
+        segments = read_packed_from_stream(&mut message_reader, StreamOptions::default()).unwrap();
+    } else {
+        segments = read_from_stream(src, StreamOptions::DEFAULT).unwrap();
+    }
     let message = message::Reader::new(&segments, message::ReaderOptions::default());
     let address_book = message.read_as_struct::<AddressBook>();
 
@@ -122,18 +139,26 @@ pub fn print_address_book<W: Write>(src: &[u8], output: &mut W) -> ::recapn::Res
     Ok(())
 }
 
-#[test]
-fn test() {
-    let mut t: Vec<u8> = vec![];
-    write_address_book(&mut t);
+#[cfg(test)]
+mod test {
+    use rstest::rstest;
 
-    let mut string_repr: Vec<u8> = vec![];
+    use super::*;
 
-    print_address_book(&t, &mut string_repr).unwrap();
+    #[rstest]
+    #[case(true)]
+    #[case(false)]
+    fn test(#[case] packed: bool) {
+        let mut t: Vec<u8> = vec![];
+        write_address_book(&mut t, packed);
 
-    assert_eq!(
-        String::from_utf8_lossy(&string_repr),
-        "\
+        let mut string_repr: Vec<u8> = vec![];
+
+        print_address_book(&t, &mut string_repr, packed).unwrap();
+
+        assert_eq!(
+            String::from_utf8_lossy(&string_repr),
+            "\
 Alice: alice@example.com
   mobile phone: 555-1212
   student at: MIT
@@ -142,5 +167,6 @@ Bob: bob@example.com
   work phone: 555-7654
   unemployed
 "
-    );
+        );
+    }
 }

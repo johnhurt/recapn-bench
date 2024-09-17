@@ -11,3 +11,6 @@ recapn = { path = "../recapn/recapn" }
 
 [build-dependencies]
 build-helper = { path = "../build-helper" }
+
+[dev-dependencies]
+rstest = "0.22.0"

@@ -3,9 +3,9 @@ include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 use std::io::Write;
 
 use crate::addressbook_capnp::{address_book, person};
-use capnp::serialize_packed;
+use capnp::{serialize, serialize_packed};
 
-pub fn write_address_book<W: Write>(target: &mut W) -> ::capnp::Result<()> {
+pub fn write_address_book<W: Write>(target: &mut W, packed: bool) -> ::capnp::Result<()> {
     let mut message = ::capnp::message::Builder::new_default();
     {
         let address_book = message.init_root::<address_book::Builder>();
@@ -50,12 +50,22 @@ pub fn write_address_book<W: Write>(target: &mut W) -> ::capnp::Result<()> {
         }
     }
 
-    serialize_packed::write_message(target, &message)
+    if packed {
+        serialize_packed::write_message(target, &message)
+    } else {
+        serialize::write_message(target, &message)
+    }
 }
 
-pub fn print_address_book(src: &[u8]) -> ::capnp::Result<()> {
-    let message_reader =
-        serialize_packed::read_message(src, ::capnp::message::ReaderOptions::new())?;
+pub fn print_address_book(src: &[u8], packed: bool) -> ::capnp::Result<()> {
+    let message_reader;
+    if packed {
+        message_reader =
+            serialize_packed::read_message(src, ::capnp::message::ReaderOptions::new())?;
+    } else {
+        message_reader = serialize::read_message(src, ::capnp::message::ReaderOptions::new())?;
+    }
+
     let address_book = message_reader.get_root::<address_book::Reader>()?;
 
     for person in address_book.get_people()? {
