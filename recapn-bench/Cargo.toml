@@ -3,8 +3,24 @@ name = "recapn-bench"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "lib_recapn_bench"
+path = "src/lib.rs"
+
+[[bin]]
+name = "recapn_bench"
+path = "src/main.rs"
+
 [dependencies]
 clap = { version = "4.5.16", features = ["derive"] }
 cpp-interop = { path = "../cpp-interop" }
 rust-old-capnp = { path = "../rust-old-capnp" }
 rust-recapn = { path = "../rust-recapn" }
+strum = { version = "0.26.3", features = ["derive"] }
+arbitrary = { version = "1", optional = true, features = ["derive"] }
+fuzz-models = { path = "../fuzz-models" }
+once_cell = "1.20.2"
+which = "6.0.3"
+eyre = "0.6.12"
+iter_tools = "0.21.0"
+itertools = "0.13.0"

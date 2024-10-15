@@ -7,10 +7,12 @@ edition = "2021"
 OUT_DIR = "kluge"
 
 [dependencies]
+eyre = "0.6.12"
 recapn = { path = "../recapn/recapn" }
+fuzz-models = { path = "../fuzz-models" }
 
 [build-dependencies]
 build-helper = { path = "../build-helper" }
 
 [dev-dependencies]
-rstest = "0.22.0"
+rstest = "0.23.0"

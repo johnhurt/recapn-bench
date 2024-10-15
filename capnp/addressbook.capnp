@@ -1,8 +1,5 @@
 @0x8fba018e2ddc2059;
 
-using Cxx = import "/capnp/c++.capnp";
-$Cxx.namespace("addressbook");
-
 struct Person {
   id @0 :UInt32;
   name @1 :Text;

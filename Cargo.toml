@@ -3,8 +3,10 @@
 members = [
     "build-helper",
     "cpp-gen",
-    "cpp-interop",
+    "cpp-interop", 
+    "fuzz-models",
     "recapn-bench",
+    "recapn-bench/fuzz",
     "rust-old-capnp", 
     "rust-recapn",
 ]

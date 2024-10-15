@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+fuzz-models = { path = "../fuzz-models" }
 
 [env]
 OUT_DIR = "kluge"

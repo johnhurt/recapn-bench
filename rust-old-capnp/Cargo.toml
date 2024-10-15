@@ -7,7 +7,9 @@ edition = "2021"
 OUT_DIR = "kluge"
 
 [dependencies]
-capnp = "0.19.6"
+capnp = "0.20.1"
+eyre = "0.6.12"
+fuzz-models = { path = "../fuzz-models" }
 
 [build-dependencies]
 build-helper = { path = "../build-helper" }

@@ -11,11 +11,21 @@ fn main() {
 
     for capnp_file in capnp_files {
         let rs_module = capnp_file.trim_end_matches(".capnp");
-        compile_recapn(format!("capnp/{capnp_file}"));
+        compile_recapn(dbg!(format!("capnp/{capnp_file}")));
 
         let rs_file = format!("{}.capnp.rs", rs_module);
         bindings += &format!(
-            "pub mod {rs_module}_capnp {{\n    include!(concat!(env!(\"OUT_DIR\"), \"/capnp/{rs_file}\"));\n}}\n"
+            r#"
+#[path = "."]
+pub mod {rs_module}_capnp {{
+    #![allow(unused_imports)]
+    use super::{rs_module}_capnp as __file;
+    mod __imports {{}}
+    #[path = "{rs_module}/{rs_file}"]
+    mod {rs_module}_capnp;
+    pub use {rs_module}_capnp::*;
+}}
+"#
         );
     }
 

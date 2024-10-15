@@ -1,12 +1,5 @@
 @0xd508eebdc2dc42b8;
 
-using Cxx = import "/capnp/c++.capnp";
-$Cxx.namespace("tll_types");
-
-# Use a namespace likely to cause trouble if the generated code doesn't use fully-qualified
-# names for stuff in the capnproto namespace.
-$Cxx.namespace("capnproto_test::capnp::test");
-
 enum TestEnum {
   foo @0;
   bar @1;

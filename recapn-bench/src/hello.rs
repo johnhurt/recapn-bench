@@ -1,11 +1,19 @@
 use std::io::stdout;
 
-use rust_old_capnp::{print_address_book, write_address_book};
+use eyre::Result;
+use rust_old_capnp::{
+    print_address_book as print_address_book_old_rust,
+    write_address_book as write_address_book_old_rust,
+};
+use rust_recapn::address_book::{
+    print_address_book as print_address_book_recapn,
+    write_address_book as write_address_book_recapn,
+};
 
-pub fn hello_main(packed: bool) {
+pub fn hello_main(packed: bool) -> Result<()> {
     println!("Get packed message from old rust capnp");
     let mut rs_old_target: Vec<u8> = vec![];
-    write_address_book(&mut rs_old_target, packed).unwrap();
+    write_address_book_old_rust(&mut rs_old_target, packed).unwrap();
 
     println!("Get what should be the same message from c++ capnp");
     let mut working_buffer = vec![0; rs_old_target.len()];
@@ -17,7 +25,7 @@ pub fn hello_main(packed: bool) {
 
     println!("Get what should be the same message from recapn");
     let mut recapn_target: Vec<u8> = vec![];
-    rust_recapn::write_address_book(&mut recapn_target, packed);
+    write_address_book_recapn(&mut recapn_target, packed);
 
     println!("Check the recapn and other versions emit the same packed message");
     assert_eq!(recapn_target, rs_old_target);
@@ -30,8 +38,10 @@ pub fn hello_main(packed: bool) {
     );
 
     println!("\nHere's the message interpreted by old rust");
-    print_address_book(&working_buffer[0..written], packed).unwrap();
+    print_address_book_old_rust(&working_buffer[0..written], packed).unwrap();
 
     println!("\nHere's the message interpreted by recapn");
-    rust_recapn::print_address_book(&recapn_target, &mut stdout(), packed).unwrap();
+    print_address_book_recapn(&recapn_target, &mut stdout(), packed).unwrap();
+
+    Ok(())
 }

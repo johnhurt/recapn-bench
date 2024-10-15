@@ -38,10 +38,23 @@ pub fn compile_capnp_rust_old(path: impl AsRef<str>) {
     capnpc::CompilerCommand::new().file(path).run().unwrap();
 }
 
-pub fn compile_recapn(path: impl AsRef<Path>) {
+pub fn compile_recapn(capnp_path: impl AsRef<Path>) {
+    let mut target_dir = out_path();
+    target_dir.push(
+        capnp_path
+            .as_ref()
+            .file_name()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .split_once(".")
+            .unwrap()
+            .0,
+    );
     recapnc::CapnpCommand::new()
-        .file(path.as_ref())
-        .write_to_out_dir();
+        .file(capnp_path.as_ref())
+        .src_prefix("capnp")
+        .write_to(target_dir);
 }
 
 pub fn get_capnp_file_names(dir: &str) -> Vec<String> {
@@ -82,7 +95,7 @@ pub fn compile_cpp_lib_dir(path: &str, lib_name: &str) {
         .compiler("g++")
         .files(&cpp_files)
         .flag("-lkj")
-        .emit_rerun_if_env_changed(false)
+        .emit_rerun_if_env_changed(true)
         .compile(lib_name);
 }
 
