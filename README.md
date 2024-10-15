@@ -32,8 +32,8 @@ There are a few requirements you need in order to run the benchmarks.
 
 This (and recapn) is a work in progress. Below is a matrix of bench tests that are covered by this project.
 
-| Category  | Args           | Test                                                                          | Supported | Status | Notes |
-| --------- | -------------- | ----------------------------------------------------------------------------- | --------- | ------ | ----- |
-| Basic     | `hello`        | Run the addressbook example in all capnps, and compare the output             | ✅         | ✅      | Done  |
-| Flat Fuzz | `flat --valid` | Fuzz valid inputs to a flat struct with all supported types and verify output |           | 🕙      |       |
+| Category       | Args             | Test                                                                                 | Supported | Status | Notes                                                       |
+| -------------- | ---------------- | ------------------------------------------------------------------------------------ | --------- | ------ | ----------------------------------------------------------- |
+| Basic          | `hello`          | Run the addressbook example in all capnps, and compare the output                    | ✅         | ✅      | Done                                                        |
+| Fuzz All Types | `fuzz-all-types` | Fuzz valid inputs on the all-types struct with all supported types and verify output | ✅         | 🕙      | Only scalar (primitive + enum) types are verified right now |
 
