@@ -43,6 +43,11 @@ fn serialize_all_types_helper(
     target.float32_field().set(src.float32_field);
     target.float64_field().set(src.float64_field);
     target.enum_field().set(from_enum(src.enum_field));
+
+    if let Some(text_field) = src.text_field.as_ref() {
+        target.text_field().set_str(&text_field);
+    }
+
     Ok(())
 }
 
@@ -88,6 +93,10 @@ pub fn read_all_types(src: &[u8], packed: bool) -> Result<AllTypes> {
     result.float32_field = at.float32_field();
     result.float64_field = at.float64_field();
     result.enum_field = Enum::from_repr(at.enum_field().unwrap() as u8).unwrap();
+
+    if !at.text_field().is_null() {
+        result.text_field = Some(at.text_field().as_str().unwrap().to_owned())
+    }
 
     Ok(result)
 }

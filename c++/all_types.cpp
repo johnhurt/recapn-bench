@@ -52,6 +52,21 @@ void write_all_types_helper(
     target.setFloat32Field(v->float32_field);
     target.setFloat64Field(v->float64_field);
     target.setEnumField(from_enum(v->enum_field));
+
+    if (v->text_field.present)
+    {
+        size_t size = (size_t)v->text_field.value.size;
+        if (size > 0)
+        {
+            target.setTextField(capnp::Text::Reader(
+                (char *)v->text_field.value.start,
+                size));
+        }
+        else
+        {
+            target.setTextField("");
+        }
+    }
 }
 
 void write_all_types_to_buffer(AllTypesC *v, kj::OutputStream &output, bool packed)

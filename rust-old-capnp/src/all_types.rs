@@ -32,6 +32,10 @@ pub fn read_all_types(src: &[u8], packed: bool) -> Result<AllTypes> {
     result.float64_field = at.get_float64_field();
     result.enum_field = Enum::from_repr(at.get_enum_field().unwrap() as u8).unwrap();
 
+    if at.has_text_field() {
+        result.text_field = Some(at.get_text_field().unwrap().to_string().unwrap())
+    }
+
     Ok(result)
 }
 
@@ -61,6 +65,10 @@ fn serialize_all_types_helper(v: &AllTypes, builder: &mut test_all_types::Builde
     builder.set_float32_field(v.float32_field);
     builder.set_float64_field(v.float64_field);
     builder.set_enum_field(from_enum(v.enum_field));
+
+    if let Some(text_field) = v.text_field.as_ref() {
+        builder.set_text_field(text_field);
+    }
 }
 
 pub fn serialize_all_types(v: &AllTypes, packed: bool) -> Result<Vec<u8>> {

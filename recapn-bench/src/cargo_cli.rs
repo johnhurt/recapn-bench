@@ -25,7 +25,7 @@ enum CargoCommand {
 impl CargoCommand {
     fn to_args(self) -> &'static [&'static str] {
         match self {
-            CargoCommand::Fuzz => &["+nightly", "fuzz", "run", "--dev"],
+            CargoCommand::Fuzz => &["+nightly", "fuzz", "run"],
         }
     }
 }

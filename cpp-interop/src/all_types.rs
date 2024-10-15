@@ -26,16 +26,33 @@ impl Optional<BoxedAllTypes> {
     }
 }
 
+impl Text {
+    fn from_str(src: &str, conversions: &mut Conversions) -> Text {
+        let with_null = src
+            .as_bytes()
+            .iter()
+            .copied()
+            .chain(Some(0))
+            .collect::<Vec<_>>();
+
+        let result = Text {
+            size: src.len() as u64,
+            start: with_null.as_ptr(),
+        };
+
+        conversions.strings.push(with_null);
+
+        result
+    }
+}
+
 impl Optional<Text> {
-    fn from_string_opt(other_opt: &Option<String>) -> Self {
+    fn from_string_opt(other_opt: &Option<String>, conversions: &mut Conversions) -> Self {
         match other_opt.as_ref() {
             Some(other) => Optional {
                 kind: FieldKind::Text as u8,
                 present: true,
-                value: Text {
-                    size: other.len() as u64,
-                    start: other.as_bytes().as_ptr(),
-                },
+                value: Text::from_str(other, conversions),
                 _phantom_0: Default::default(),
             },
             None => Optional {
@@ -121,10 +138,7 @@ impl OptionalList<Text> {
             Some(other) => {
                 let text_list = other
                     .iter()
-                    .map(|s| Text {
-                        size: s.len() as u64,
-                        start: s.as_bytes().as_ptr(),
-                    })
+                    .map(|s| Text::from_str(s, conversions))
                     .collect::<Vec<_>>();
 
                 let result = OptionalList {
@@ -285,6 +299,7 @@ impl<T: Default> Default for Optional<T> {
 #[allow(clippy::vec_box)]
 #[derive(Default, Debug)]
 pub struct Conversions {
+    strings: Vec<Vec<u8>>,
     text_lists: Vec<Vec<Text>>,
     data_lists: Vec<Vec<Data>>,
     structs: Vec<Box<AllTypesC>>,
@@ -317,7 +332,7 @@ impl AllTypesC {
             float32_field: value.float32_field,
             float64_field: value.float64_field,
             struct_field: Optional::from_boxed_all_types_opt(&value.struct_field, conversions),
-            text_field: Optional::from_string_opt(&value.text_field),
+            text_field: Optional::from_string_opt(&value.text_field, conversions),
             data_field: Optional::from_bytes_opt(&value.data_field),
             enum_field: value.enum_field as u8,
 
