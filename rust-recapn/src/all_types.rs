@@ -48,6 +48,10 @@ fn serialize_all_types_helper(
         target.text_field().set_str(&text_field);
     }
 
+    if let Some(data_field) = src.data_field.as_ref() {
+        target.data_field().set_slice(&data_field);
+    }
+
     Ok(())
 }
 
@@ -96,6 +100,10 @@ pub fn read_all_types(src: &[u8], packed: bool) -> Result<AllTypes> {
 
     if !at.text_field().is_null() {
         result.text_field = Some(at.text_field().as_str().unwrap().to_owned())
+    }
+
+    if !at.data_field().is_null() {
+        result.data_field = Some(at.data_field().get().as_slice().to_vec())
     }
 
     Ok(result)

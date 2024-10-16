@@ -55,16 +55,23 @@ void write_all_types_helper(
 
     if (v->text_field.present)
     {
-        size_t size = (size_t)v->text_field.value.size;
+        target.setTextField(capnp::Text::Reader(
+            (char *)v->text_field.value.start,
+            (size_t)v->text_field.value.size));
+    }
+
+    if (v->data_field.present)
+    {
+        size_t size = (size_t)v->data_field.value.size;
         if (size > 0)
         {
-            target.setTextField(capnp::Text::Reader(
-                (char *)v->text_field.value.start,
+            target.setDataField(capnp::Data::Reader(
+                (u_int8_t *)v->data_field.value.start,
                 size));
         }
         else
         {
-            target.setTextField("");
+            target.setDataField(kj::Array<u_int8_t>(0));
         }
     }
 }

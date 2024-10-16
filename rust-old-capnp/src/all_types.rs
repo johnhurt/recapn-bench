@@ -36,6 +36,9 @@ pub fn read_all_types(src: &[u8], packed: bool) -> Result<AllTypes> {
         result.text_field = Some(at.get_text_field().unwrap().to_string().unwrap())
     }
 
+    if at.has_data_field() {
+        result.data_field = Some(at.get_data_field().unwrap().to_owned())
+    }
     Ok(result)
 }
 
@@ -68,6 +71,10 @@ fn serialize_all_types_helper(v: &AllTypes, builder: &mut test_all_types::Builde
 
     if let Some(text_field) = v.text_field.as_ref() {
         builder.set_text_field(text_field);
+    }
+
+    if let Some(data_field) = v.data_field.as_ref() {
+        builder.set_data_field(data_field);
     }
 }
 
